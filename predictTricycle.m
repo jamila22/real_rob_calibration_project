@@ -1,5 +1,5 @@
-#{Function definition for predictTricycle inspired by: 
-probabilistic_robotics_2023_24/source/octave/19b_mobile_base_calibration/predictTricycle.m #}
+%Function definition for predictTricycle inspired by: 
+%probabilistic_robotics_2023_24/source/octave/19b_mobile_base_calibration/predictTricycle.m 
 
 function delta_pose = predictTricycle(traction_ticks, steer_ticks, x)
     k_traction = x(1); 
