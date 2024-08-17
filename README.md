@@ -6,8 +6,8 @@ Calibrate the kinematic parameters and the sensor pose of a front-tractor tricyc
 
 INPUTS: 
 1) A file containing the encoder ticks of all encoders in the system:
-	   -absolute on the steer axis;
- 	   -incremental on the steering wheel.
+-absolute on the steer axis;
+-incremental on the steering wheel.
 2) The 2D poses of the sensor w.r.t. an external tracking system.
         
 OUTPUTS: 
