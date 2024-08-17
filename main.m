@@ -18,14 +18,15 @@ true_trajectory = computeTrue(observed_deltas);
 initial_trajectory = computeTrajectory(initial_params, Z);
 
 % Run the optimisation
-num_iterations = 15; #Num. of optimization iters.
-
+num_iterations = 15; % Number of optimization iterations
+params = initial_params;
 for i = 1:num_iterations
-    [params, chi] = oneRound(params, Z)
+  [params, chi] = oneRound(params, Z)
 endfor
 
 % Compute optimised trajectory
 optimized_trajectory = computeTrajectory(params, Z);
+
 
 % Plot trajectories
 figure;
