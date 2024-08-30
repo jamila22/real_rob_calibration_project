@@ -1,5 +1,3 @@
-1;
-
 % Define needed maximum values 
 MAX_UINT32 = 4294967295;
 MAX_ABS_ENCODER = 8192;
@@ -81,24 +79,40 @@ end
 
 % Calculate incremental ticks (traction)
 delta_ticks = diff(ticks_array(:,2))';
-
+ 
 % Correct for overflow
 for i = 1:length(delta_ticks)
     if delta_ticks(i) < -MAX_UINT32 / 2
-        delta_ticks(i) = delta_ticks(i) + MAX_UINT32 + 1;
+        delta_ticks(i) = delta_ticks(i) + MAX_UINT32 ;
     elseif delta_ticks(i) > MAX_UINT32 / 2
-        delta_ticks(i) = delta_ticks(i) - (MAX_UINT32 + 1);
+        delta_ticks(i) = delta_ticks(i) - MAX_UINT32 ;
+    end    
+end
+% Correct ranges
+delta_ticks = delta_ticks / MAX_INC_ENCODER ;
+
+delta_abs_ticks = diff(ticks_array(:,1))';
+ 
+% Correct for overflow
+for i = 1:length(delta_abs_ticks)
+    if delta_abs_ticks(i) < -MAX_ABS_ENCODER / 2
+        delta_abs_ticks(i) = delta_abs_ticks(i) + MAX_ABS_ENCODER;
+    elseif delta_abs_ticks(i) > MAX_ABS_ENCODER / 2
+        delta_abs_ticks(i) = delta_abs_ticks(i) -MAX_ABS_ENCODER ;
     end
 end
+% Go back to absolute values
+old_abs = abs_ticks(1);
+new_abs = zeros(1,length(abs_ticks));
 
-% Correct ranges
-
-delta_ticks = delta_ticks / MAX_INC_ENCODER;
-
-abs_ticks = abs_ticks / MAX_ABS_ENCODER;
+for i = 1:length(delta_abs_ticks)
+	new_abs(i) = old_abs + delta_abs_ticks(i);
+	old_abs = new_abs(i);
+end
 
 % Create final ticks matrix
-final_ticks = [delta_ticks; abs_ticks(2:end)]';
+final_ticks = [delta_ticks; new_abs(1:end-1)/MAX_ABS_ENCODER]';
+
 
 % Save data to MAT-files
 save('delta_t_pose.mat', 'delta_t_pose_array');
@@ -118,7 +132,7 @@ printf('Size of ticks_array: %d x %d\n', size(final_ticks));
 printf('Size of tau: %d\n', length(delta_tau));
 
 % Plot model and tracker position
-figure;
+h = figure;
 colors = linspace(1, 0, n);
 
 subplot(1, 2, 1);
@@ -131,6 +145,4 @@ scatter(t_pose_array(:,1), t_pose_array(:,2), [], colors, 'filled');
 title('Tracker Pose');
 axis equal;
 
-% Pause to keep the figure open
-pause;
-
+waitfor(h);
