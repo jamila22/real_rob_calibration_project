@@ -2,19 +2,18 @@
 
 % Load data from .mat files
 load('delta_t_pose.mat'); % Contains [delta_x_t(:), delta_y_t(:), delta_th_t(:)];
-load('final_ticks.mat'); % Contains [delta_ticks, abs_ticks(2:end)];
-load('delta_time.mat');
+load('delta_m_pose.mat'); % Contains [delta_x_t(:), delta_y_t(:), delta_th_t(:)];
+load('final_ticks.mat'); % Contains [delta_ticks, abs_ticks(1:end-1)];
+%load('delta_time.mat');
 
-observed_deltas = delta_t_pose_array';
+observed_deltas = delta_t_pose_array'; %tracker deltas 
+%observed_deltas = delta_t_pose_array'; %model deltas, uncomment for tricycle only
 ticks = final_ticks';
 %delta_tau = delta_tau';
-Z = [ticks; observed_deltas; delta_tau'];
+Z = [ticks; observed_deltas];
 
-% Initial parameters [k_traction, k_steer, steer_encoder_offset, baseline, x_s, y_s, theta_s]; #0.1 0.0106141 1.4 0
-%initial_params = [0.0106141, -0.1, 0, 1.4, 1.5, 0, 0]';
-%initial_params = [0.0106141, -0.5, 0, 1.4, -1.5, 0, 0.2]';
-%initial_params = [1.1892e-02, 5.0033e-01, 6.0676e-05, 2.0219e+00, 1.9562, -0.1082, 0.3981]';
-initial_params = [1.0399e-02, 4.9361e-01 2.6418e-03 2.0219e+00 1.9562e+00 -1.0820e-01 3.9810e-01]';
+%initial_params = [[0.0106141, 0.1,  0 , 1.4, 0 ,0 ,0]'; %uncomment for tricycle only
+initial_params = [0.0106141, 0.1,  0 , 1.4, 1.5 ,0 ,0]';
 
 %Compute true trajectory
 true_trajectory = computeTrue(observed_deltas);
@@ -23,7 +22,7 @@ true_trajectory = computeTrue(observed_deltas);
 initial_trajectory = computeTrajectory(initial_params, Z);
 
 % Run the optimisation
-num_iterations = 19; % Number of optimisation iterations
+num_iterations = 10; % Number of optimisation iterations
 params = initial_params;
 chi_stats = zeros(1,num_iterations);
 
@@ -68,7 +67,5 @@ title('Trajectories');
 hold off;
 waitfor(h);
 
-disp('Optimized parameters:');
+disp('Optimised parameters:');
 disp(params);
-
-
