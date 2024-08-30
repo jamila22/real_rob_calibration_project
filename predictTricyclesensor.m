@@ -12,7 +12,7 @@ function delta_pose_sensor = predictTricyclesensor(traction_ticks, steer_ticks, 
     pose_s = [x_s; y_s; theta_s];
 
     traction_linear_offset = k_traction * traction_ticks;
-    steering_angle = k_steer * steer_ticks * pi + steer_encoder_offset;
+    steering_angle = k_steer * steer_ticks * 2 * pi + steer_encoder_offset;
     back_wheels_displacement = traction_linear_offset * cos(steering_angle);
 
     dth = traction_linear_offset * sin(steering_angle) / baseline;
@@ -25,14 +25,14 @@ function delta_pose_sensor = predictTricyclesensor(traction_ticks, steer_ticks, 
     dx = drho * polyval(S, dth);
     dy = drho * polyval(C, dth);
     
-    delta_time_ref = mean(delta_time);  % or median(delta_time_values)
+    %delta_time_ref = mean(delta_time);  % or median(delta_time_values)
     % Normalize delta_time by the reference time step
-    scaled_delta_time = delta_time / delta_time_ref;
+    %scaled_delta_time = delta_time / delta_time_ref;
 
     % Scale the displacements by the normalized time step
-    dx = dx * scaled_delta_time;
-    dy = dy * scaled_delta_time;
-    dth = dth * scaled_delta_time;
+    %dx = dx * scaled_delta_time;
+    %dy = dy * scaled_delta_time;
+    %dth = dth * scaled_delta_time;
 
     delta_pose_tri = [dx; dy; dth];
     T_delta_pose_tri = v2t(delta_pose_tri);
