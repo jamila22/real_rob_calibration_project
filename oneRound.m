@@ -1,33 +1,37 @@
 % Function definition for oneRound
 
-function [x, chi] = oneRound(x, Z)
-    H = zeros(4, 4);
-    b = zeros(4, 1);
-    chi = 0;
-    threshold = 1;
+function [x, chi_s] = oneRound(x, Z)
+    H = zeros(7, 7);
+    b = zeros(7, 1);
+    chi_s = 0;
+    %threshold = 0.1;
   
-    for i = 1:size(Z, 2)
-    	[e, J] = errorAndJacobian(x, Z(:, i));
-    	chi += e' * e;
+    for i = 1:size(Z,2)
     
-    if chi > threshold
-    	e *= sqrt(threshold/chi);
-    	chi=threshold;
-    endif
+    	[e, J, gamma] = finalerrorAndJacobian(x, Z(:, i));
+    	chi = e' * e;
+    	chi_s += chi;
     
-    omega = eye(3)*17;       
-    H += J' * omega * J;
-    damp_H = H + eye(4);
-    b += J' * omega * e;
+    	omega =  eye(3);
+    	%omega(1,1) *= 0.1; 
+    	%omega(2,2) *= 0.3;
+    	%omega(3,3) *= 1;    
+  
+           
+    	H += J_norm' * gamma * omega * J_norm;
+    	factor = eye(7);
+    	%factor(1,1) = 0
+    	damp_H = H + factor;
+    	b += J_norm' * gamma * omega * e;
     endfor
-  
+    
   % Solve for dx and update 
-  dx = -damp_H \ b
+  dx = -damp_H \ b;
   
   if any(isnan(dx)) || any(isinf(dx))
       error('Computed dx contains NaN or Inf values.');
   endif
   
-  x += dx;
+  x(1:4) += dx(1:4);
+  x(5:7) = t2v(v2t(x(5:7)) * v2t(dx(5:7)'));
 endfunction
-
