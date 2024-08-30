@@ -11,10 +11,10 @@ function [e, J] = errorAndJacobian(x, z)
   
     for i = 1:4
         epsilon = zeros(4, 1);
-        epsilon(i) = 1e-7;
+        epsilon(i) = 1e-3;
         pred_delta_plus = predictTricycle(traction_ticks, steer_ticks, x + epsilon);
         pred_delta_minus = predictTricycle(traction_ticks, steer_ticks, x - epsilon);
-        J(:, i) = (t2v((v2t(meas)^-1 * v2t(pred_delta_plus))) - t2v((v2t(meas)^-1 * v2t(pred_delta_minus)))) / (2e-7);
+        J(:, i) = (t2v((v2t(meas)^-1 * v2t(pred_delta_plus))) - t2v((v2t(meas)^-1 * v2t(pred_delta_minus)))) / (2e-3);
     endfor
 endfunction
 
