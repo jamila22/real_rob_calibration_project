@@ -1,14 +1,12 @@
-% Function to compute trajectory given kin. params. and measurements
-function trajectory = computeTrajectory(params, Z)
-	n = size(Z, 2);
-	trajectory = zeros(3, n);	
-	pose = [0; 0; 0]; % Starting pose
-    T_pose = v2t(pose);
-  
+% Function to compute the true trajectory given a sequence of deltas
+function trajectory = computeTrue(x)
+    n = size(x,2);
+    current_T = v2t(zeros(1,3));
+    trajectory = zeros(3,n);
+    
     for i = 1:n
-    	delta_pose = predictTricycle(Z(1, i), Z(2, i), params);
-    	T_pose *= v2t(delta_pose);
-    	trajectory(:, i) = t2v(T_pose);
+      delta = x(1:3, i)';
+      current_T *= v2t(delta);
+      trajectory(:,i) = t2v(current_T)';
     endfor
 endfunction
-
